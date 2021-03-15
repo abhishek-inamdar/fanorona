@@ -49,13 +49,21 @@ public class Player {
     }
 
     /**
+     * return moveCount Map
+     * @return moveCount Map
+     */
+    public Map<Move, Integer> getMoveCount() {
+        return moveCount;
+    }
+
+    /**
      * plays one move for this player based on current State
      * amd returns new State
      * @param curState Current Game State
      * @return New State after player's move
      */
     public State play(State curState) {
-        Play play = sAlgo.searchAndSelect(evaluation, depthLimit, playerNum);
+        Play play = sAlgo.searchAndSelect(curState, evaluation, depthLimit, playerNum);
         moveCount.put(play.getMove(), play.getSearchCount());
         return play.getState();
     }

@@ -77,4 +77,14 @@ public class Move {
     public Set<Position> getAffectedPositions() {
         return affectedPositions;
     }
+
+    @Override
+    public String toString() {
+        return "Move{" +
+                "startPos=" + startPos +
+                ", endPos=" + endPos +
+                ", moveType=" + moveType +
+                ", affectedPositions=" + affectedPositions +
+                '}';
+    }
 }

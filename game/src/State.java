@@ -40,6 +40,15 @@ public class State {
     }
 
     /**
+     * returns valueMap for this State
+     *
+     * @return valueMap
+     */
+    public Map<Position, Integer> getValueMap() {
+        return valueMap;
+    }
+
+    /**
      * returns successors of this State
      *
      * @return Map of Successors with each possible move
@@ -280,5 +289,34 @@ public class State {
         } else {
             return null;
         }
+    }
+
+    /**
+     * checks for terminal condition
+     * terminal state will contain pieces of only one color
+     *
+     * @return
+     */
+    public boolean isTerminal() {
+        Set<Position> currPlayerPieces = new HashSet<>();
+        Set<Position> oppPlayerPieces = new HashSet<>();
+        for (Position p : valueMap.keySet()) {
+            if (valueMap.get(p) == turnPlayer) {
+                currPlayerPieces.add(p);
+            } else {
+                oppPlayerPieces.add(p);
+            }
+        }
+        return currPlayerPieces.isEmpty() || oppPlayerPieces.isEmpty();
+    }
+
+    public int getPiecesCount(int playerNum) {
+        int count = 0;
+        for (Position p : valueMap.keySet()) {
+            if (valueMap.get(p) == playerNum) {
+                count++;
+            }
+        }
+        return count;
     }
 }
