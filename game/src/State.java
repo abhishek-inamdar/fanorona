@@ -3,21 +3,35 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * State representation
+ *
+ * @author Abhishek Inamdar
+ */
 public class State {
     /**
      * Map of all the connected positions
      */
-    private Map<Position, Set<Position>> connectionMap;
+    private final Map<Position, Set<Position>> connectionMap;
 
     /**
      * Map of values at each position
      * Value: 0 = No piece, 1 = white piece, 2 = black piece
      */
-    private Map<Position, Integer> valueMap;
+    private final Map<Position, Integer> valueMap;
 
-    private int turnPlayer;
+    /**
+     * Player identifier whose turn it is
+     */
+    private final int turnPlayer;
 
-
+    /**
+     * Constructor method
+     *
+     * @param connectionMap Connection Map of the board
+     * @param valueMap      ValueMap of the board
+     * @param turnPlayer    Player whose turn it is
+     */
     public State(Map<Position, Set<Position>> connectionMap,
                  Map<Position, Integer> valueMap, int turnPlayer) {
         this.connectionMap = connectionMap;
@@ -25,8 +39,14 @@ public class State {
         this.turnPlayer = turnPlayer;
     }
 
-    public Set<State> getSuccessors() {
-        Set<State> successors = new HashSet<>();
+    /**
+     * returns successors of this State
+     *
+     * @return Map of Successors with each possible move
+     */
+    public Map<Move, State> getSuccessors() {
+        Map<Move, State> successors = new HashMap<>();
+
         Set<Position> currPositions = new HashSet<>();
         getPlayerPositions(currPositions);
 
@@ -47,11 +67,16 @@ public class State {
             for (Position p : move.getAffectedPositions()) {
                 lValueMap.put(p, 0);
             }
-            successors.add(new State(connectionMap, lValueMap, nextTurnPlayer));
+            successors.put(move, new State(connectionMap, lValueMap, nextTurnPlayer));
         }
         return successors;
     }
 
+    /**
+     * Populates Current position set with player's piece positions
+     *
+     * @param currPositions all the pieces
+     */
     private void getPlayerPositions(Set<Position> currPositions) {
         for (Position p : valueMap.keySet()) {
             if (valueMap.get(p) == turnPlayer) {
@@ -60,14 +85,20 @@ public class State {
         }
     }
 
+    /**
+     * Populates all the possible moves
+     *
+     * @param currPositions Current positions of the pieces
+     * @param possibleMoves Possible moves from available pieces
+     */
     private void getPossibleMoves(Set<Position> currPositions, Set<Move> possibleMoves) {
-        Set<Move> nonAttckingMoves = new HashSet<>();
+        Set<Move> nonAttackingMoves = new HashSet<>();
         for (Position startPos : currPositions) {
             Set<Position> connections = connectionMap.get(startPos);
             for (Position endPos : connections) {
                 if (valueMap.get(endPos) == 0) {
                     Set<Position> affectedPositions = new HashSet<>();
-                    nonAttckingMoves.add(new Move(startPos, endPos, MoveType.NOATTACK, affectedPositions));
+                    nonAttackingMoves.add(new Move(startPos, endPos, MoveType.NOATTACK, affectedPositions));
                     getAttackPositions(affectedPositions, startPos, endPos, MoveType.APPROACH);
                     if (!affectedPositions.isEmpty()) {
                         possibleMoves.add(new Move(startPos, endPos, MoveType.APPROACH, affectedPositions));
@@ -83,10 +114,18 @@ public class State {
         }
         if (possibleMoves.isEmpty()) {
             //Attacking moves Not present
-            possibleMoves.addAll(nonAttckingMoves);
+            possibleMoves.addAll(nonAttackingMoves);
         }
     }
 
+    /**
+     * populates affected positions based on given attacking move
+     *
+     * @param affectedPositions Set positions affected
+     * @param startPos          Starting position of the move
+     * @param endPos            Ending position of the move
+     * @param moveType          Move Type
+     */
     private void getAttackPositions(Set<Position> affectedPositions,
                                     Position startPos, Position endPos,
                                     MoveType moveType) {
@@ -99,73 +138,14 @@ public class State {
         }
     }
 
-    private void getAffectedPositions(Set<Position> affectedPositions,
-                                      Position position, Direction direction) {
-        boolean flag = true;
-        Position currPos = new Position(position.getX(), position.getY());
-        while (flag) {
-            Position nextPos = getValidNextPosition(currPos, direction);
-            if (nextPos != null
-                    && valueMap.get(nextPos) != 0
-                    && valueMap.get(nextPos) != turnPlayer) {
-                affectedPositions.add(nextPos);
-                currPos = nextPos;
-            } else {
-                flag = false;
-            }
-        }
-    }
-
-    private Position getValidNextPosition(Position currPos, Direction direction) {
-        int curX = currPos.getX();
-        int curY = currPos.getY();
-        int nextX = -1;
-        int nextY = -1;
-        switch (direction) {
-            case TOP:
-                nextX = curX;
-                nextY = curY - 1;
-                break;
-            case BOTTOM:
-                nextX = curX;
-                nextY = curY + 1;
-                break;
-            case LEFT:
-                nextX = curX - 1;
-                nextY = curY;
-                break;
-            case RIGHT:
-                nextX = curX + 1;
-                nextY = curY;
-                break;
-            case TOP_LEFT:
-                nextX = curX - 1;
-                nextY = curY - 1;
-                break;
-            case TOP_RIGHT:
-                nextX = curX + 1;
-                nextY = curY - 1;
-                break;
-            case BOTTOM_LEFT:
-                nextX = curX - 1;
-                nextY = curY + 1;
-                break;
-            case BOTTOM_RIGHT:
-                nextX = curX + 1;
-                nextY = curY + 1;
-                break;
-            default:
-                nextX = -1;
-                nextY = -1;
-                break;
-        }
-        if (nextX != -1 && nextY != -1 && valueMap.containsKey(new Position(nextX, nextY))) {
-            return new Position(nextX, nextY);
-        } else {
-            return null;
-        }
-    }
-
+    /**
+     * returns the direction of the move
+     * based on starting and ending positions
+     *
+     * @param startPos Starting position
+     * @param endPos   ending positions
+     * @return direction
+     */
     private Direction getDirectionOfMove(Position startPos, Position endPos) {
         int startX = startPos.getX();
         int startY = startPos.getY();
@@ -195,6 +175,12 @@ public class State {
         }
     }
 
+    /**
+     * returns opposite direction of the given direction
+     *
+     * @param direction direction
+     * @return Opposite Direction
+     */
     private Direction getOppositeDirection(final Direction direction) {
         if (direction == Direction.TOP) {
             return Direction.BOTTOM;
@@ -215,4 +201,84 @@ public class State {
         }
     }
 
+    /**
+     * populates affected positions based on Position and Direction
+     *
+     * @param affectedPositions affected positions
+     * @param position          original positions
+     * @param direction         Direction of the effect
+     */
+    private void getAffectedPositions(Set<Position> affectedPositions,
+                                      Position position, Direction direction) {
+        boolean flag = true;
+        Position currPos = new Position(position.getX(), position.getY());
+        while (flag) {
+            Position nextPos = getValidNextPosition(currPos, direction);
+            if (nextPos != null
+                    && valueMap.get(nextPos) != 0
+                    && valueMap.get(nextPos) != turnPlayer) {
+                affectedPositions.add(nextPos);
+                currPos = nextPos;
+            } else {
+                flag = false;
+            }
+        }
+    }
+
+    /**
+     * returns next valid position on the board,
+     * based on current position and direction
+     *
+     * @param currPos   current position
+     * @param direction desired direction
+     * @return next position if valid, null otherwise
+     */
+    private Position getValidNextPosition(Position currPos, Direction direction) {
+        int curX = currPos.getX();
+        int curY = currPos.getY();
+        int nextX, nextY;
+        switch (direction) {
+            case TOP -> {
+                nextX = curX;
+                nextY = curY - 1;
+            }
+            case BOTTOM -> {
+                nextX = curX;
+                nextY = curY + 1;
+            }
+            case LEFT -> {
+                nextX = curX - 1;
+                nextY = curY;
+            }
+            case RIGHT -> {
+                nextX = curX + 1;
+                nextY = curY;
+            }
+            case TOP_LEFT -> {
+                nextX = curX - 1;
+                nextY = curY - 1;
+            }
+            case TOP_RIGHT -> {
+                nextX = curX + 1;
+                nextY = curY - 1;
+            }
+            case BOTTOM_LEFT -> {
+                nextX = curX - 1;
+                nextY = curY + 1;
+            }
+            case BOTTOM_RIGHT -> {
+                nextX = curX + 1;
+                nextY = curY + 1;
+            }
+            default -> {
+                nextX = -1;
+                nextY = -1;
+            }
+        }
+        if (nextX != -1 && nextY != -1 && valueMap.containsKey(new Position(nextX, nextY))) {
+            return new Position(nextX, nextY);
+        } else {
+            return null;
+        }
+    }
 }
