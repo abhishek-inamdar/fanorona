@@ -12,12 +12,12 @@ public class Board {
     /**
      * Width of the board
      */
-    private int width;
+    private final int width;
 
     /**
      * Height of the board
      */
-    private int height;
+    private final int height;
 
     /**
      * Map of all the connected positions
@@ -63,7 +63,7 @@ public class Board {
         int heightIndex = height - 1;
         int midRowIndex = (height - (height / 2)) - 1;
         int midColumnIndex = (width - (width / 2)) - 1;
-        Position position = null;
+        Position position;
         //Black pieces
         for (int y = 0; y < midRowIndex; y++) {
             for (int x = 0; x <= widthIndex; x++) {
@@ -106,8 +106,8 @@ public class Board {
         int widthIndex = width - 1;
         int heightIndex = height - 1;
 
-        Position position = null;
-        Set<Position> connections = null;
+        Position position;
+        Set<Position> connections;
         for (int x = 0; x <= widthIndex; x++) {
             for (int y = 0; y <= heightIndex; y++) {
                 position = new Position(x, y);
@@ -212,6 +212,7 @@ public class Board {
 
     /**
      * Gets Connection Map for this board
+     *
      * @return Connection Map for this board
      */
     public Map<Position, Set<Position>> getConnectionMap() {
@@ -220,41 +221,11 @@ public class Board {
 
     /**
      * Gets Value Map for this board
+     *
      * @return Value Map for this board
      */
     public Map<Position, Integer> getValueMap() {
         return valueMap;
-    }
-
-    /**
-     * Changes value at given position
-     *
-     * @param x     x-coordinate of the position
-     * @param y     y-coordinate of the position
-     * @param value desired value at the position
-     * @return true if value is set, false otherwise
-     */
-    public boolean setValue(int x, int y, int value) {
-        Position position = new Position(x, y);
-        return setValue(position, value);
-    }
-
-    /**
-     * Changes value at given position
-     *
-     * @param position desired position
-     * @param value    desired value at the position
-     * @return true if value is set, false otherwise
-     */
-    public boolean setValue(Position position, int value) {
-        if (value < 0 || value > 2)
-            throw new IllegalArgumentException("Value should be either 0 or 1 or 2");
-
-        if (valueMap.containsKey(position)) {
-            valueMap.put(position, value);
-            return true;
-        }
-        return false;
     }
 
     /**

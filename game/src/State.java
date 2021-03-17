@@ -25,9 +25,10 @@ public class State {
      */
     private final Player turnPlayer;
 
+    /**
+     * Opponent player
+     */
     private final Player opponent;
-
-    private boolean isDraw;
 
     /**
      * Constructor method
@@ -42,7 +43,7 @@ public class State {
         this.valueMap = valueMap;
         this.turnPlayer = turnPlayer;
         this.opponent = opponent;
-        this.isDraw = false;
+
     }
 
     /**
@@ -52,11 +53,6 @@ public class State {
      */
     public Map<Position, Integer> getValueMap() {
         return valueMap;
-    }
-
-    public boolean isDraw() {
-        determineDraw();
-        return isDraw;
     }
 
     /**
@@ -326,10 +322,10 @@ public class State {
         return count;
     }
 
-    private void determineDraw() {
+    public boolean isDraw() {
         int player1Count = getPiecesCount(1);
         int player2Count = getPiecesCount(2);
-//        if (player1Count == player2Count && player1Count <= 2){
+//        if (player1Count == player2Count && player1Count = 2){
 //            int depthLimit = 2;
 //            State nextState = new State(connectionMap, valueMap, turnPlayer, opponent);
 //            Player p1 = null;
@@ -355,10 +351,10 @@ public class State {
 //                }
 //                depthLimit--;
 //            }
-//            isDraw =  true;
+//            return  true;
 //        } else {
-//            isDraw =  false;
+//            return  false;
 //        }
-        isDraw = false;
+        return false;
     }
 }

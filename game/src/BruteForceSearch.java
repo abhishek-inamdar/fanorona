@@ -30,7 +30,7 @@ public class BruteForceSearch implements Search {
             int value = Integer.MIN_VALUE;
             for (Move m : successors.keySet()) {
                 searchCount++;
-                StateValue moveValue = maxValue(successors.get(m), eval, depthLimit);
+                StateValueBF moveValue = maxValue(successors.get(m), eval, depthLimit);
                 searchCount += moveValue.getSearchCount();
                 if (moveValue.getBest() > value) {
                     value = moveValue.getBest();
@@ -41,7 +41,7 @@ public class BruteForceSearch implements Search {
             int value = Integer.MAX_VALUE;
             for (Move m : successors.keySet()) {
                 searchCount++;
-                StateValue moveValue = minValue(successors.get(m), eval, depthLimit);
+                StateValueBF moveValue = minValue(successors.get(m), eval, depthLimit);
                 searchCount += moveValue.getSearchCount();
                 if (moveValue.getBest() < value) {
                     value = moveValue.getBest();
@@ -60,14 +60,14 @@ public class BruteForceSearch implements Search {
      * @param remainingDepth remaining DepthLimit
      * @return State Value with best value and Search count
      */
-    private StateValue maxValue(State state, Evaluation eval, int remainingDepth) {
+    private StateValueBF maxValue(State state, Evaluation eval, int remainingDepth) {
         int searchCount = 0;
         // value of a state, given it is our move
         if (state.isTerminal() || isCutoff(remainingDepth)) {
-            return new StateValue(eval.evaluate(state.getValueMap()), searchCount);
+            return new StateValueBF(eval.evaluate(state.getValueMap()), searchCount);
         }
         if (state.isDraw()) {
-            return new StateValue(0, searchCount);
+            return new StateValueBF(0, searchCount);
         }
         int best = Integer.MIN_VALUE;
         Map<Move, State> successors = state.getSuccessors();
@@ -75,12 +75,12 @@ public class BruteForceSearch implements Search {
             searchCount++;
             //find value of each child state
             // it will be my opponent 's turn
-            StateValue stateValue = minValue(successors.get(m), eval, remainingDepth - 1);
+            StateValueBF stateValue = minValue(successors.get(m), eval, remainingDepth - 1);
             if (stateValue.getBest() > best) {
                 best = stateValue.getBest();
             }
         }
-        return new StateValue(best, searchCount);
+        return new StateValueBF(best, searchCount);
     }
 
     /**
@@ -91,14 +91,14 @@ public class BruteForceSearch implements Search {
      * @param remainingDepth remaining DepthLimit
      * @return State Value with best value and Search count
      */
-    private StateValue minValue(State state, Evaluation eval, int remainingDepth) {
+    private StateValueBF minValue(State state, Evaluation eval, int remainingDepth) {
         int searchCount = 0;
         // value of a state, given it is our move
         if (state.isTerminal() || isCutoff(remainingDepth)) {
-            return new StateValue(eval.evaluate(state.getValueMap()), searchCount);
+            return new StateValueBF(eval.evaluate(state.getValueMap()), searchCount);
         }
         if (state.isDraw()) {
-            return new StateValue(0, searchCount);
+            return new StateValueBF(0, searchCount);
         }
         int best = Integer.MAX_VALUE;
         Map<Move, State> successors = state.getSuccessors();
@@ -106,12 +106,12 @@ public class BruteForceSearch implements Search {
             searchCount++;
             //find value of each child state
             // it will be my opponent 's turn
-            StateValue stateValue = maxValue(successors.get(m), eval, remainingDepth - 1);
+            StateValueBF stateValue = maxValue(successors.get(m), eval, remainingDepth - 1);
             if (stateValue.getBest() < best) {
                 best = stateValue.getBest();
             }
         }
-        return new StateValue(best, searchCount);
+        return new StateValueBF(best, searchCount);
     }
 
     /**
@@ -122,5 +122,49 @@ public class BruteForceSearch implements Search {
      */
     private boolean isCutoff(final int remainingDepth) {
         return remainingDepth <= 0;
+    }
+}
+
+/**
+ * State Value representation
+ */
+class StateValueBF {
+    /**
+     * Best value - Integer
+     */
+    private final int best;
+
+    /**
+     * Number of States explored (searched)
+     */
+    private final int searchCount;
+
+    /**
+     * Constructor method
+     *
+     * @param best        best value
+     * @param searchCount search count
+     */
+    public StateValueBF(int best, int searchCount) {
+        this.best = best;
+        this.searchCount = searchCount;
+    }
+
+    /**
+     * returns the best value
+     *
+     * @return best value
+     */
+    public int getBest() {
+        return best;
+    }
+
+    /**
+     * returns the search count
+     *
+     * @return search count
+     */
+    public int getSearchCount() {
+        return searchCount;
     }
 }

@@ -10,12 +10,12 @@ public class Position {
     /**
      * x-coordinate of the positions
      */
-    private int x;
+    private final int x;
 
     /**
      * y-coordinate of the positions
      */
-    private int y;
+    private final int y;
 
     /**
      * Constructor method

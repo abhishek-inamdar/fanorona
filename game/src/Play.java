@@ -7,17 +7,17 @@ public class Play {
     /**
      * Move object
      */
-    private Move move;
+    private final Move move;
 
     /**
      * State object
      */
-    private State state;
+    private final State state;
 
     /**
      * Count of evaluated States
      */
-    private int searchCount;
+    private final int searchCount;
 
     /**
      * Constructor method

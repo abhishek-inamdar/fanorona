@@ -1,3 +1,8 @@
+/**
+ * Enum Direction
+ *
+ * @author Abhishek Inamdar
+ */
 public enum Direction {
     TOP,
     BOTTOM,
@@ -6,5 +11,5 @@ public enum Direction {
     TOP_LEFT,
     TOP_RIGHT,
     BOTTOM_LEFT,
-    BOTTOM_RIGHT;
+    BOTTOM_RIGHT
 }

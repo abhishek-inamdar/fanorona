@@ -1,6 +1,14 @@
 import java.util.Map;
 
+/**
+ * Main class for Fanorona Game
+ */
 public class Fanorona {
+    /**
+     * Main method
+     *
+     * @param args Ignored
+     */
     public static void main(String[] args) {
         //TODO add main code
 
@@ -9,7 +17,8 @@ public class Fanorona {
         Board boardFiveByNine = new Board(9, 5);
 
         Search bruteForceSearch = new BruteForceSearch();
-        Search randomSearch = new BruteForceSearch();
+        Search randomSearch = new RandomSearch();
+        Search alphaBetaSearch = new AlphaBetaSearch();
 
         int depthLimitOne = 1;
         int depthLimitChoice = 3;
@@ -29,24 +38,36 @@ public class Fanorona {
         };
 
 
-        GameResult result = PlayGame(boardFiveByFive,
-                bruteForceSearch, evaluation, depthLimitChoice,
-                bruteForceSearch, evaluation, depthLimitChoice);
+//        GameResult result3 = PlayGame(boardFiveByFive,
+//                randomSearch, evaluation, depthLimitChoice,
+//                bruteForceSearch, evaluation, depthLimitChoice);
+//        printResults(result3);
 
-        printResults(result);
+//        GameResult result4 = PlayGame(boardFiveByFive,
+//                bruteForceSearch, evaluation, depthLimitOne,
+//                bruteForceSearch, evaluation, depthLimitChoice);
+//
+//        printResults(result4);
+
+        GameResult result6 = PlayGame(boardFiveByFive,
+                alphaBetaSearch, evaluation, depthLimitChoice,
+                alphaBetaSearch, evaluation, depthLimitChoice);
+
+        printResults(result6);
     }
 
-    private static void printResults(GameResult result) {
-        int playerWon = result.getPlayerWon();
-        Map<Move, Integer> moveCountMapP1 = result.getPlayer1moveCounts();
-        Map<Move, Integer> moveCountMapP2 = result.getPlayer2moveCounts();
-        System.out.println("Player Won: " + playerWon);
-        System.out.println("Player 1 moveCount:");
-        System.out.println(moveCountMapP1.values().stream().mapToLong(i -> i).sum());
-        System.out.println("Player 2 moveCount:");
-        System.out.println(moveCountMapP2.values().stream().mapToLong(i -> i).sum());
-    }
-
+    /**
+     * Method to play the game based on given parameters
+     *
+     * @param board             Board
+     * @param player1Search     Player 1's search algorithm
+     * @param player1Eval       Player 1's Evaluation Function
+     * @param player1DepthLimit Player 1's Depth limit
+     * @param player2Search     Player 2's search algorithm
+     * @param player2Eval       Player 2's Evaluation Function
+     * @param player2DepthLimit Player 2's Depth limit
+     * @return Results of the game
+     */
     private static GameResult PlayGame(Board board,
                                        Search player1Search, Evaluation player1Eval, int player1DepthLimit,
                                        Search player2Search, Evaluation player2Eval, int player2DepthLimit) {
@@ -68,14 +89,14 @@ public class Fanorona {
             if (currState.isTerminal()) {
                 isGameOn = false;
             }
-            if (currState.isDraw()){
+            if (currState.isDraw()) {
                 isGameOn = false;
                 isDraw = true;
             }
         }
 
         int playerWon = 0;
-        if(playerNum == 1){
+        if (playerNum == 1) {
             playerWon = 2;
         } else {
             playerWon = 1;
@@ -84,10 +105,27 @@ public class Fanorona {
         return new GameResult(playerWon, isDraw, p1.getMoveCount(), p2.getMoveCount());
     }
 
-
+    /**
+     * method to print results
+     *
+     * @param result Game result object
+     */
+    private static void printResults(GameResult result) {
+        int playerWon = result.getPlayerWon();
+        Map<Move, Integer> moveCountMapP1 = result.getPlayer1moveCounts();
+        Map<Move, Integer> moveCountMapP2 = result.getPlayer2moveCounts();
+        System.out.println("Player Won: " + playerWon);
+        System.out.println("Player 1 moveCount:");
+        System.out.println(moveCountMapP1.values().stream().mapToLong(i -> i).sum());
+        System.out.println("Player 2 moveCount:");
+        System.out.println(moveCountMapP2.values().stream().mapToLong(i -> i).sum());
+    }
 }
 
-class GameResult{
+/**
+ * Plain Object for Game Result representation
+ */
+class GameResult {
     private int playerWon;
     private boolean isDraw;
     private Map<Move, Integer> player1moveCounts;
