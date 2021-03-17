@@ -1,7 +1,4 @@
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * State representation
@@ -38,12 +35,12 @@ public class State {
      * @param turnPlayer    Player whose turn it is
      */
     public State(Map<Position, Set<Position>> connectionMap,
-                 Map<Position, Integer> valueMap, Player turnPlayer, Player opponent) {
+                 Map<Position, Integer> valueMap,
+                 Player turnPlayer, Player opponent) {
         this.connectionMap = connectionMap;
         this.valueMap = valueMap;
         this.turnPlayer = turnPlayer;
         this.opponent = opponent;
-
     }
 
     /**
@@ -99,10 +96,10 @@ public class State {
     /**
      * Populates all the possible moves
      *
-     * @param currPositions Current positions of the pieces
-     * @param possibleMoves Possible moves from available pieces
+     * @param currPositions  Current positions of the pieces
+     * @param attackingMoves Possible moves from available pieces
      */
-    private void getPossibleMoves(Set<Position> currPositions, Set<Move> possibleMoves) {
+    private void getPossibleMoves(Set<Position> currPositions, Set<Move> attackingMoves) {
         Set<Move> nonAttackingMoves = new HashSet<>();
         for (Position startPos : currPositions) {
             Set<Position> connections = connectionMap.get(startPos);
@@ -112,20 +109,20 @@ public class State {
                     nonAttackingMoves.add(new Move(startPos, endPos, MoveType.NOATTACK, affectedPositions));
                     getAttackPositions(affectedPositions, startPos, endPos, MoveType.APPROACH);
                     if (!affectedPositions.isEmpty()) {
-                        possibleMoves.add(new Move(startPos, endPos, MoveType.APPROACH, affectedPositions));
+                        attackingMoves.add(new Move(startPos, endPos, MoveType.APPROACH, affectedPositions));
                     }
                     affectedPositions = new HashSet<>();
                     getAttackPositions(affectedPositions, startPos, endPos, MoveType.RETREAT);
                     if (!affectedPositions.isEmpty()) {
-                        possibleMoves.add(new Move(startPos, endPos, MoveType.RETREAT, affectedPositions));
+                        attackingMoves.add(new Move(startPos, endPos, MoveType.RETREAT, affectedPositions));
                     }
                 }
             }
 
         }
-        if (possibleMoves.isEmpty()) {
+        if (attackingMoves.isEmpty()) {
             //Attacking moves Not present
-            possibleMoves.addAll(nonAttackingMoves);
+            attackingMoves.addAll(nonAttackingMoves);
         }
     }
 
@@ -142,7 +139,7 @@ public class State {
                                     MoveType moveType) {
         Direction direction = getDirectionOfMove(startPos, endPos);
         if (moveType == MoveType.RETREAT) {
-            direction = getOppositeDirection(direction);
+            direction = Direction.getOppositeDirection(direction);
             getAffectedPositions(affectedPositions, startPos, direction);
         } else {
             getAffectedPositions(affectedPositions, endPos, direction);
@@ -183,32 +180,6 @@ public class State {
             return Direction.BOTTOM_LEFT;
         } else {
             return Direction.BOTTOM_RIGHT;
-        }
-    }
-
-    /**
-     * returns opposite direction of the given direction
-     *
-     * @param direction direction
-     * @return Opposite Direction
-     */
-    private Direction getOppositeDirection(final Direction direction) {
-        if (direction == Direction.TOP) {
-            return Direction.BOTTOM;
-        } else if (direction == Direction.BOTTOM) {
-            return Direction.TOP;
-        } else if (direction == Direction.LEFT) {
-            return Direction.RIGHT;
-        } else if (direction == Direction.RIGHT) {
-            return Direction.LEFT;
-        } else if (direction == Direction.TOP_LEFT) {
-            return Direction.BOTTOM_RIGHT;
-        } else if (direction == Direction.TOP_RIGHT) {
-            return Direction.BOTTOM_LEFT;
-        } else if (direction == Direction.BOTTOM_LEFT) {
-            return Direction.TOP_RIGHT;
-        } else {
-            return Direction.TOP_LEFT;
         }
     }
 
@@ -297,7 +268,7 @@ public class State {
      * checks for terminal condition
      * terminal state will contain pieces of only one color
      *
-     * @return
+     * @return true if terminal state, false otherwise
      */
     public boolean isTerminal() {
         Set<Position> currPlayerPieces = new HashSet<>();
@@ -312,49 +283,78 @@ public class State {
         return currPlayerPieces.isEmpty() || oppPlayerPieces.isEmpty();
     }
 
-    public int getPiecesCount(int playerNum) {
-        int count = 0;
+    /**
+     * returns Set Positions for given Player
+     *
+     * @param playerNum Player number
+     * @return Positions
+     */
+    public Set<Position> getPieces(int playerNum) {
+        Set<Position> pieces = new HashSet<>();
         for (Position p : valueMap.keySet()) {
             if (valueMap.get(p) == playerNum) {
-                count++;
+                pieces.add(p);
             }
         }
-        return count;
+        return pieces;
     }
 
+    /**
+     * Checks if it's draw
+     * For Simplicity draw condition is considered as follows
+     * 1. Board needs to be at least 5*5 or 5*9
+     * 2. Each player should have 2 pieces left
+     * 3. Least amount of moves for any two pieces of opponents
+     * to attack with APPROACH Move should be at least 7
+     *
+     * @return true if draw condition is satisfied, false otherwise
+     */
     public boolean isDraw() {
-        int player1Count = getPiecesCount(1);
-        int player2Count = getPiecesCount(2);
-//        if (player1Count == player2Count && player1Count = 2){
-//            int depthLimit = 2;
-//            State nextState = new State(connectionMap, valueMap, turnPlayer, opponent);
-//            Player p1 = null;
-//            Player p2 = null;
-//            int playerNum = turnPlayer.getPlayerNum();
-//            if (turnPlayer.getPlayerNum() == 1) {
-//                p1 = new Player(turnPlayer.getEvaluation(), turnPlayer.getsAlgo(), depthLimit, turnPlayer.getPlayerNum());
-//                p2 = new Player(opponent.getEvaluation(), opponent.getsAlgo(), depthLimit, opponent.getPlayerNum());
-//            } else {
-//                p1 = new Player(opponent.getEvaluation(), opponent.getsAlgo(), depthLimit, opponent.getPlayerNum());
-//                p2 = new Player(turnPlayer.getEvaluation(), turnPlayer.getsAlgo(), depthLimit, turnPlayer.getPlayerNum());
-//            }
-//            while (depthLimit > 0 && nextState!= null) {
-//                if (playerNum == 1) {
-//                    nextState = p1.play(nextState, depthLimit);
-//                    playerNum = 2;
-//                } else {
-//                    nextState = p2.play(nextState, depthLimit);
-//                    playerNum = 1;
-//                }
-//                if (nextState != null && nextState.isTerminal()){
-//                    isDraw =  false;
-//                }
-//                depthLimit--;
-//            }
-//            return  true;
-//        } else {
-//            return  false;
-//        }
+        Set<Position> player1pieces = getPieces(1);
+        Set<Position> player2pieces = getPieces(2);
+        if (valueMap.size() > 9 && player1pieces.size() == 2
+                && player1pieces.size() == player2pieces.size()) {
+            int reach = 100;
+            for (Position p1 : player1pieces) {
+                for (Position p2 : player2pieces) {
+                    int t = getApproachMoves(p1, p2);
+                    if (t > 1 && t < reach) {
+                        reach = t;
+                    }
+                }
+            }
+            return reach >= 7;
+        }
         return false;
+    }
+
+    /**
+     * returns number of approach moves needed to reach from
+     * one position to another.
+     *
+     * @param p1 Position 1
+     * @param p2 Position 2
+     * @return number of moves
+     */
+    private int getApproachMoves(Position p1, Position p2) {
+        Queue<Position> queue = new ArrayDeque<>();
+        Set<Position> visited = new HashSet<>();
+        queue.add(p1);
+        visited.add(p1);
+        int moveCount = -1;
+        while (!queue.isEmpty()) {
+            moveCount++;
+            Position p = queue.poll();
+            if (p.equals(p2)) {
+                break;
+            }
+            Set<Position> connections = connectionMap.get(p);
+            for (Position con : connections) {
+                if (!visited.contains(con)) {
+                    queue.add(con);
+                }
+            }
+        }
+        return moveCount;
     }
 }

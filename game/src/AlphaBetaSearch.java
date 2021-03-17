@@ -69,7 +69,7 @@ public class AlphaBetaSearch implements Search {
             return new StateValueAB(eval.evaluate(state.getValueMap()), beta, searchCount);
         }
         if (state.isDraw()) {
-            return new StateValueAB(0, beta, searchCount);
+            return new StateValueAB(0, 0, searchCount);
         }
 
         Map<Move, State> successors = state.getSuccessors();
@@ -107,7 +107,7 @@ public class AlphaBetaSearch implements Search {
             return new StateValueAB(alpha, eval.evaluate(state.getValueMap()), searchCount);
         }
         if (state.isDraw()) {
-            return new StateValueAB(alpha, 0, searchCount);
+            return new StateValueAB(0, 0, searchCount);
         }
 
         Map<Move, State> successors = state.getSuccessors();
