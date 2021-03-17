@@ -23,7 +23,11 @@ public class State {
     /**
      * Player identifier whose turn it is
      */
-    private final int turnPlayer;
+    private final Player turnPlayer;
+
+    private final Player opponent;
+
+    private boolean isDraw;
 
     /**
      * Constructor method
@@ -33,10 +37,12 @@ public class State {
      * @param turnPlayer    Player whose turn it is
      */
     public State(Map<Position, Set<Position>> connectionMap,
-                 Map<Position, Integer> valueMap, int turnPlayer) {
+                 Map<Position, Integer> valueMap, Player turnPlayer, Player opponent) {
         this.connectionMap = connectionMap;
         this.valueMap = valueMap;
         this.turnPlayer = turnPlayer;
+        this.opponent = opponent;
+        this.isDraw = false;
     }
 
     /**
@@ -46,6 +52,11 @@ public class State {
      */
     public Map<Position, Integer> getValueMap() {
         return valueMap;
+    }
+
+    public boolean isDraw() {
+        determineDraw();
+        return isDraw;
     }
 
     /**
@@ -63,20 +74,15 @@ public class State {
         getPossibleMoves(currPositions, possibleMoves);
 
         Map<Position, Integer> lValueMap;
-        int nextTurnPlayer;
-        if (turnPlayer == 1) {
-            nextTurnPlayer = 2;
-        } else {
-            nextTurnPlayer = 1;
-        }
+
         for (Move move : possibleMoves) {
             lValueMap = new HashMap<>(valueMap);
             lValueMap.put(move.getStartPos(), 0);
-            lValueMap.put(move.getEndPos(), turnPlayer);
+            lValueMap.put(move.getEndPos(), turnPlayer.getPlayerNum());
             for (Position p : move.getAffectedPositions()) {
                 lValueMap.put(p, 0);
             }
-            successors.put(move, new State(connectionMap, lValueMap, nextTurnPlayer));
+            successors.put(move, new State(connectionMap, lValueMap, opponent, turnPlayer));
         }
         return successors;
     }
@@ -88,7 +94,7 @@ public class State {
      */
     private void getPlayerPositions(Set<Position> currPositions) {
         for (Position p : valueMap.keySet()) {
-            if (valueMap.get(p) == turnPlayer) {
+            if (valueMap.get(p) == turnPlayer.getPlayerNum()) {
                 currPositions.add(p);
             }
         }
@@ -225,7 +231,7 @@ public class State {
             Position nextPos = getValidNextPosition(currPos, direction);
             if (nextPos != null
                     && valueMap.get(nextPos) != 0
-                    && valueMap.get(nextPos) != turnPlayer) {
+                    && valueMap.get(nextPos) != turnPlayer.getPlayerNum()) {
                 affectedPositions.add(nextPos);
                 currPos = nextPos;
             } else {
@@ -301,7 +307,7 @@ public class State {
         Set<Position> currPlayerPieces = new HashSet<>();
         Set<Position> oppPlayerPieces = new HashSet<>();
         for (Position p : valueMap.keySet()) {
-            if (valueMap.get(p) == turnPlayer) {
+            if (valueMap.get(p) == turnPlayer.getPlayerNum()) {
                 currPlayerPieces.add(p);
             } else {
                 oppPlayerPieces.add(p);
@@ -318,5 +324,41 @@ public class State {
             }
         }
         return count;
+    }
+
+    private void determineDraw() {
+        int player1Count = getPiecesCount(1);
+        int player2Count = getPiecesCount(2);
+//        if (player1Count == player2Count && player1Count <= 2){
+//            int depthLimit = 2;
+//            State nextState = new State(connectionMap, valueMap, turnPlayer, opponent);
+//            Player p1 = null;
+//            Player p2 = null;
+//            int playerNum = turnPlayer.getPlayerNum();
+//            if (turnPlayer.getPlayerNum() == 1) {
+//                p1 = new Player(turnPlayer.getEvaluation(), turnPlayer.getsAlgo(), depthLimit, turnPlayer.getPlayerNum());
+//                p2 = new Player(opponent.getEvaluation(), opponent.getsAlgo(), depthLimit, opponent.getPlayerNum());
+//            } else {
+//                p1 = new Player(opponent.getEvaluation(), opponent.getsAlgo(), depthLimit, opponent.getPlayerNum());
+//                p2 = new Player(turnPlayer.getEvaluation(), turnPlayer.getsAlgo(), depthLimit, turnPlayer.getPlayerNum());
+//            }
+//            while (depthLimit > 0 && nextState!= null) {
+//                if (playerNum == 1) {
+//                    nextState = p1.play(nextState, depthLimit);
+//                    playerNum = 2;
+//                } else {
+//                    nextState = p2.play(nextState, depthLimit);
+//                    playerNum = 1;
+//                }
+//                if (nextState != null && nextState.isTerminal()){
+//                    isDraw =  false;
+//                }
+//                depthLimit--;
+//            }
+//            isDraw =  true;
+//        } else {
+//            isDraw =  false;
+//        }
+        isDraw = false;
     }
 }

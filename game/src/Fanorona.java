@@ -12,8 +12,8 @@ public class Fanorona {
         Search randomSearch = new BruteForceSearch();
 
         int depthLimitOne = 1;
-        int depthLimitChoice = 6;
-        int depthLimitLarge = 20;
+        int depthLimitChoice = 3;
+        int depthLimitLarge = 8;
 
         Evaluation evaluation = valueMap -> {
             int whitePieces = 0;
@@ -33,24 +33,29 @@ public class Fanorona {
                 bruteForceSearch, evaluation, depthLimitChoice,
                 bruteForceSearch, evaluation, depthLimitChoice);
 
+        printResults(result);
+    }
+
+    private static void printResults(GameResult result) {
         int playerWon = result.getPlayerWon();
         Map<Move, Integer> moveCountMapP1 = result.getPlayer1moveCounts();
         Map<Move, Integer> moveCountMapP2 = result.getPlayer2moveCounts();
         System.out.println("Player Won: " + playerWon);
         System.out.println("Player 1 moveCount:");
-        System.out.println(moveCountMapP1.toString());
+        System.out.println(moveCountMapP1.values().stream().mapToLong(i -> i).sum());
         System.out.println("Player 2 moveCount:");
-        System.out.println(moveCountMapP2.toString());
+        System.out.println(moveCountMapP2.values().stream().mapToLong(i -> i).sum());
     }
 
     private static GameResult PlayGame(Board board,
                                        Search player1Search, Evaluation player1Eval, int player1DepthLimit,
                                        Search player2Search, Evaluation player2Eval, int player2DepthLimit) {
-        State startState = new State(board.getConnectionMap(), board.getValueMap(), 1);
         Player p1 = new Player(player1Eval, player1Search, player1DepthLimit, 1);
         Player p2 = new Player(player2Eval, player2Search, player2DepthLimit, 2);
+        State startState = new State(board.getConnectionMap(), board.getValueMap(), p1, p2);
         boolean isGameOn = true;
         int playerNum = 1;
+        boolean isDraw = false;
         State currState = startState;
         while (isGameOn) {
             if (playerNum == 1) {
@@ -63,10 +68,12 @@ public class Fanorona {
             if (currState.isTerminal()) {
                 isGameOn = false;
             }
+            if (currState.isDraw()){
+                isGameOn = false;
+                isDraw = true;
+            }
         }
 
-        // TODO implement draw logic
-        boolean isDraw = false;
         int playerWon = 0;
         if(playerNum == 1){
             playerWon = 2;

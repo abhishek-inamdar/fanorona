@@ -56,6 +56,22 @@ public class Player {
         return moveCount;
     }
 
+    public Evaluation getEvaluation() {
+        return evaluation;
+    }
+
+    public Search getsAlgo() {
+        return sAlgo;
+    }
+
+    public int getDepthLimit() {
+        return depthLimit;
+    }
+
+    public int getPlayerNum() {
+        return playerNum;
+    }
+
     /**
      * plays one move for this player based on current State
      * amd returns new State
@@ -63,6 +79,12 @@ public class Player {
      * @return New State after player's move
      */
     public State play(State curState) {
+        Play play = sAlgo.searchAndSelect(curState, evaluation, depthLimit, playerNum);
+        moveCount.put(play.getMove(), play.getSearchCount());
+        return play.getState();
+    }
+
+    public State play(State curState, int depthLimit){
         Play play = sAlgo.searchAndSelect(curState, evaluation, depthLimit, playerNum);
         moveCount.put(play.getMove(), play.getSearchCount());
         return play.getState();

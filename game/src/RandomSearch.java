@@ -7,6 +7,14 @@ import java.util.*;
  * @author Abhishek Inamdar
  */
 public class RandomSearch implements Search{
+    /**
+     * Search implementation of Random Selection of successor
+     * @param currState Current State
+     * @param eval Evaluation function
+     * @param depthLimit DepthLimit
+     * @param playerNum PlayerNum of current player
+     * @return Play chosen by current player
+     */
     @Override
     public Play searchAndSelect(State currState, Evaluation eval, int depthLimit, int playerNum) {
         Map<Move, State> possibleMoves = currState.getSuccessors();
