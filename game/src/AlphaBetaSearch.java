@@ -12,7 +12,7 @@ public class AlphaBetaSearch implements Search {
      * @param currState  Current State
      * @param eval       Evaluation function
      * @param depthLimit DepthLimit
-     * @param playerNum
+     * @param playerNum  Player Number
      * @return Play chosen by current player
      */
     @Override
@@ -31,20 +31,20 @@ public class AlphaBetaSearch implements Search {
         if (playerNum == 1) {
             for (Move m : successors.keySet()) {
                 searchCount++;
-                StateValue moveValue = maxValue(successors.get(m), eval, depthLimit, alpha, beta);
+                StateValueAB moveValue = maxValue(successors.get(m), eval, depthLimit, alpha, beta);
                 searchCount += moveValue.getSearchCount();
-                if (moveValue.getBest() > alpha) {
-                    alpha = moveValue.getBest();
+                if (moveValue.getAlpha() > alpha) {
+                    alpha = moveValue.getAlpha();
                     selectedMove = m;
                 }
             }
         } else {
             for (Move m : successors.keySet()) {
                 searchCount++;
-                StateValue moveValue = minValue(successors.get(m), eval, depthLimit, alpha, beta);
+                StateValueAB moveValue = minValue(successors.get(m), eval, depthLimit, alpha, beta);
                 searchCount += moveValue.getSearchCount();
-                if (moveValue.getBest() < beta) {
-                    beta = moveValue.getBest();
+                if (moveValue.getBeta() < beta) {
+                    beta = moveValue.getBeta();
                     selectedMove = m;
                 }
             }
@@ -62,14 +62,14 @@ public class AlphaBetaSearch implements Search {
      * @param beta           beta value
      * @return State Value with best value and Search count
      */
-    private StateValue maxValue(State state, Evaluation eval, int remainingDepth, int alpha, int beta) {
+    private StateValueAB maxValue(State state, Evaluation eval, int remainingDepth, int alpha, int beta) {
         int searchCount = 0;
         // value of a state, given it is our move
         if (state.isTerminal() || isCutoff(remainingDepth)) {
-            return new StateValue(eval.evaluate(state.getValueMap()), searchCount);
+            return new StateValueAB(eval.evaluate(state.getValueMap()), beta, searchCount);
         }
         if (state.isDraw()) {
-            return new StateValue(0, searchCount);
+            return new StateValueAB(0, beta, searchCount);
         }
 
         Map<Move, State> successors = state.getSuccessors();
@@ -77,17 +77,17 @@ public class AlphaBetaSearch implements Search {
             searchCount++;
             //find value of each child state
             // it will be my opponent 's turn
-            StateValue stateValue = minValue(successors.get(m), eval, remainingDepth - 1, alpha, beta);
-            if (stateValue.getBest() > alpha) {
-                alpha = stateValue.getBest();
+            StateValueAB stateValue = minValue(successors.get(m), eval, remainingDepth - 1, alpha, beta);
+            if (stateValue.getBeta() > alpha) {
+                alpha = stateValue.getBeta();
             }
             // if better (for me) than my opponent's option,
             // no point to continue searching this branch
             if (alpha > beta) {
-                return new StateValue(beta, searchCount);
+                return new StateValueAB(alpha, beta, searchCount);
             }
         }
-        return new StateValue(alpha, searchCount);
+        return new StateValueAB(alpha, beta, searchCount);
     }
 
     /**
@@ -100,14 +100,14 @@ public class AlphaBetaSearch implements Search {
      * @param beta           beta value
      * @return State Value with best value and Search count
      */
-    private StateValue minValue(State state, Evaluation eval, int remainingDepth, int alpha, int beta) {
+    private StateValueAB minValue(State state, Evaluation eval, int remainingDepth, int alpha, int beta) {
         int searchCount = 0;
         // value of a state, given it is our move
         if (state.isTerminal() || isCutoff(remainingDepth)) {
-            return new StateValue(eval.evaluate(state.getValueMap()), searchCount);
+            return new StateValueAB(alpha, eval.evaluate(state.getValueMap()), searchCount);
         }
         if (state.isDraw()) {
-            return new StateValue(0, searchCount);
+            return new StateValueAB(alpha, 0, searchCount);
         }
 
         Map<Move, State> successors = state.getSuccessors();
@@ -115,17 +115,17 @@ public class AlphaBetaSearch implements Search {
             searchCount++;
             //find value of each child state
             // it will be my opponent 's turn
-            StateValue stateValue = maxValue(successors.get(m), eval, remainingDepth - 1, alpha, beta);
-            if (stateValue.getBest() < beta) {
-                beta = stateValue.getBest();
+            StateValueAB stateValue = maxValue(successors.get(m), eval, remainingDepth - 1, alpha, beta);
+            if (stateValue.getAlpha() < beta) {
+                beta = stateValue.getAlpha();
             }
             // if better (for me) than my opponent's option,
             // no point to continue searching this branch
             if (beta > alpha) {
-                return new StateValue(alpha, searchCount);
+                return new StateValueAB(alpha, beta, searchCount);
             }
         }
-        return new StateValue(beta, searchCount);
+        return new StateValueAB(alpha, beta, searchCount);
     }
 
     /**
@@ -136,5 +136,49 @@ public class AlphaBetaSearch implements Search {
      */
     private boolean isCutoff(final int remainingDepth) {
         return remainingDepth <= 0;
+    }
+}
+
+
+/**
+ * State Value representation
+ */
+class StateValueAB {
+    /**
+     * Alpha value - Integer
+     */
+    private final int alpha;
+
+    /**
+     * Beta value - Integer
+     */
+    private final int beta;
+
+    /**
+     * Number of States explored (searched)
+     */
+    private final int searchCount;
+
+    /**
+     * Constructor method
+     *
+     * @param searchCount search count
+     */
+    public StateValueAB(int alpha, int beta, int searchCount) {
+        this.alpha = alpha;
+        this.beta = beta;
+        this.searchCount = searchCount;
+    }
+
+    public int getAlpha() {
+        return alpha;
+    }
+
+    public int getBeta() {
+        return beta;
+    }
+
+    public int getSearchCount() {
+        return searchCount;
     }
 }
