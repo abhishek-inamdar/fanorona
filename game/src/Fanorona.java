@@ -54,12 +54,12 @@ public class Fanorona {
                     blank++;
                 }
             }
-            if (whitePieces < blackPieces){
+            if (whitePieces < blackPieces) {
                 blank = -blank;
             }
-            double value = ( ((double) whitePieces - blackPieces) / total
-                                + ((double) blank) / total
-                            ) * 100;
+            double value = (((double) whitePieces - blackPieces) / total
+                    + ((double) blank) / total
+            ) * 100;
             return (int) Math.round(value);
         };
 
@@ -154,19 +154,19 @@ public class Fanorona {
                 isGameOn = false;
             }
             if (currState.isDraw()) {
+                playerNum = 0;
                 isGameOn = false;
-                isDraw = true;
             }
         }
 
         int playerWon = 0;
         if (playerNum == 1) {
             playerWon = 2;
-        } else {
+        } else if (playerNum == 2) {
             playerWon = 1;
         }
 
-        return new GameResult(playerWon, isDraw, p1.getMoveCount(), p2.getMoveCount());
+        return new GameResult(playerWon, p1.getMoveCount(), p2.getMoveCount());
     }
 
     /**
@@ -179,14 +179,19 @@ public class Fanorona {
         Map<Move, Integer> moveCountMapP1 = result.getPlayer1moveCounts();
         Map<Move, Integer> moveCountMapP2 = result.getPlayer2moveCounts();
         System.out.println("****************************************");
-        if(playerWon == 0){
+        if (playerWon == 0) {
             System.out.println("Game Drawn!!");
         } else {
             System.out.println("Player Won: " + playerWon);
         }
         System.out.print("Player 1 moveCount: ");
-        System.out.println(moveCountMapP1.values().stream().mapToLong(i -> i).sum());
+        System.out.println(moveCountMapP1.size());
         System.out.print("Player 2 moveCount: ");
+        System.out.println(moveCountMapP2.size());
+
+        System.out.print("Player 1 moveSearchCount: ");
+        System.out.println(moveCountMapP1.values().stream().mapToLong(i -> i).sum());
+        System.out.print("Player 2 moveSearchCount: ");
         System.out.println(moveCountMapP2.values().stream().mapToLong(i -> i).sum());
         System.out.println("****************************************");
     }
@@ -197,23 +202,18 @@ public class Fanorona {
  */
 class GameResult {
     private int playerWon;
-    private boolean isDraw;
     private Map<Move, Integer> player1moveCounts;
     private Map<Move, Integer> player2moveCounts;
 
-    public GameResult(int playerWon, boolean isDraw, Map<Move, Integer> player1moveCounts, Map<Move, Integer> player2moveCounts) {
+    public GameResult(int playerWon, Map<Move, Integer> player1moveCounts,
+                      Map<Move, Integer> player2moveCounts) {
         this.playerWon = playerWon;
-        this.isDraw = isDraw;
         this.player1moveCounts = player1moveCounts;
         this.player2moveCounts = player2moveCounts;
     }
 
     public int getPlayerWon() {
         return playerWon;
-    }
-
-    public boolean isDraw() {
-        return isDraw;
     }
 
     public Map<Move, Integer> getPlayer1moveCounts() {

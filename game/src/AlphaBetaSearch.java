@@ -31,7 +31,7 @@ public class AlphaBetaSearch implements Search {
         if (playerNum == 1) {
             for (Move m : successors.keySet()) {
                 searchCount++;
-                StateValueAB moveValue = maxValue(successors.get(m), eval, depthLimit, alpha, beta);
+                StateValueAB moveValue = maxValue(successors.get(m), eval, depthLimit, depthLimit, alpha, beta);
                 searchCount += moveValue.getSearchCount();
                 if (moveValue.getAlpha() > alpha) {
                     alpha = moveValue.getAlpha();
@@ -41,7 +41,7 @@ public class AlphaBetaSearch implements Search {
         } else {
             for (Move m : successors.keySet()) {
                 searchCount++;
-                StateValueAB moveValue = minValue(successors.get(m), eval, depthLimit, alpha, beta);
+                StateValueAB moveValue = minValue(successors.get(m), eval, depthLimit, depthLimit, alpha, beta);
                 searchCount += moveValue.getSearchCount();
                 if (moveValue.getBeta() < beta) {
                     beta = moveValue.getBeta();
@@ -49,7 +49,11 @@ public class AlphaBetaSearch implements Search {
                 }
             }
         }
-        return new Play(selectedMove, successors.get(selectedMove), searchCount);
+        State state = successors.get(selectedMove);
+        if (alpha == 0 || beta == 0) {
+            state.setDraw(true);
+        }
+        return new Play(selectedMove, state, searchCount);
     }
 
     /**
@@ -58,11 +62,12 @@ public class AlphaBetaSearch implements Search {
      * @param state          Current State
      * @param eval           Evaluation function
      * @param remainingDepth remaining DepthLimit
+     * @param origDepthLimit Original Depth Limit
      * @param alpha          alpha value
      * @param beta           beta value
      * @return State Value with best value and Search count
      */
-    private StateValueAB maxValue(State state, Evaluation eval, int remainingDepth, int alpha, int beta) {
+    private StateValueAB maxValue(State state, Evaluation eval, int remainingDepth, final int origDepthLimit, int alpha, int beta) {
         int searchCount = 0;
         // value of a state, given it is our move
         if (state.isTerminal()) {
@@ -78,7 +83,8 @@ public class AlphaBetaSearch implements Search {
         if (isCutoff(remainingDepth)) {
             return new StateValueAB(eval.evaluate(state.getValueMap()), beta, searchCount);
         }
-        if (state.isDraw()) {
+        if (origDepthLimit - remainingDepth >= 7) {
+            // draw
             return new StateValueAB(0, 0, searchCount);
         }
 
@@ -87,7 +93,7 @@ public class AlphaBetaSearch implements Search {
             searchCount++;
             //find value of each child state
             // it will be my opponent 's turn
-            StateValueAB stateValue = minValue(successors.get(m), eval, remainingDepth - 1, alpha, beta);
+            StateValueAB stateValue = minValue(successors.get(m), eval, remainingDepth - 1, origDepthLimit, alpha, beta);
             if (stateValue.getBeta() > alpha) {
                 alpha = stateValue.getBeta();
             }
@@ -106,11 +112,12 @@ public class AlphaBetaSearch implements Search {
      * @param state          Current State
      * @param eval           Evaluation function
      * @param remainingDepth remaining DepthLimit
+     * @param origDepthLimit Original Depth Limit
      * @param alpha          alpha value
      * @param beta           beta value
      * @return State Value with best value and Search count
      */
-    private StateValueAB minValue(State state, Evaluation eval, int remainingDepth, int alpha, int beta) {
+    private StateValueAB minValue(State state, Evaluation eval, int remainingDepth, final int origDepthLimit, int alpha, int beta) {
         int searchCount = 0;
         // value of a state, given it is our move
         if (state.isTerminal()) {
@@ -126,7 +133,8 @@ public class AlphaBetaSearch implements Search {
         if (isCutoff(remainingDepth)) {
             return new StateValueAB(alpha, eval.evaluate(state.getValueMap()), searchCount);
         }
-        if (state.isDraw()) {
+        if (origDepthLimit - remainingDepth >= 7) {
+            // draw
             return new StateValueAB(0, 0, searchCount);
         }
 
@@ -135,7 +143,7 @@ public class AlphaBetaSearch implements Search {
             searchCount++;
             //find value of each child state
             // it will be my opponent 's turn
-            StateValueAB stateValue = maxValue(successors.get(m), eval, remainingDepth - 1, alpha, beta);
+            StateValueAB stateValue = maxValue(successors.get(m), eval, remainingDepth - 1, origDepthLimit, alpha, beta);
             if (stateValue.getAlpha() < beta) {
                 beta = stateValue.getAlpha();
             }

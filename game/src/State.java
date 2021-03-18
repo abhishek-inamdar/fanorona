@@ -28,6 +28,11 @@ public class State {
     private final Player opponent;
 
     /**
+     * isDraw value
+     */
+    private boolean isDraw = false;
+
+    /**
      * Constructor method
      *
      * @param connectionMap Connection Map of the board
@@ -50,6 +55,22 @@ public class State {
      */
     public Map<Position, Integer> getValueMap() {
         return valueMap;
+    }
+
+    /**
+     * returns isDraw value
+     * @return isDraw value
+     */
+    public boolean isDraw() {
+        return isDraw;
+    }
+
+    /**
+     * sets isDraw value
+     * @param draw value for isDraw
+     */
+    public void setDraw(boolean draw) {
+        isDraw = draw;
     }
 
     /**
@@ -314,15 +335,15 @@ public class State {
      * @param playerNum Player number
      * @return Positions
      */
-    public Set<Position> getPieces(int playerNum) {
-        Set<Position> pieces = new HashSet<>();
-        for (Position p : valueMap.keySet()) {
-            if (valueMap.get(p) == playerNum) {
-                pieces.add(p);
-            }
-        }
-        return pieces;
-    }
+//    public Set<Position> getPieces(int playerNum) {
+//        Set<Position> pieces = new HashSet<>();
+//        for (Position p : valueMap.keySet()) {
+//            if (valueMap.get(p) == playerNum) {
+//                pieces.add(p);
+//            }
+//        }
+//        return pieces;
+//    }
 
     /**
      * Checks if it's draw
@@ -334,24 +355,24 @@ public class State {
      *
      * @return true if draw condition is satisfied, false otherwise
      */
-    public boolean isDraw() {
-        Set<Position> player1pieces = getPieces(1);
-        Set<Position> player2pieces = getPieces(2);
-        if (valueMap.size() > 9 && player1pieces.size() == 2
-                && player1pieces.size() == player2pieces.size()) {
-            int reach = 100;
-            for (Position p1 : player1pieces) {
-                for (Position p2 : player2pieces) {
-                    int t = getApproachMoves(p1, p2);
-                    if (t > 1 && t < reach) {
-                        reach = t;
-                    }
-                }
-            }
-            return reach >= 7;
-        }
-        return false;
-    }
+//    public boolean isDraw() {
+//        Set<Position> player1pieces = getPieces(1);
+//        Set<Position> player2pieces = getPieces(2);
+//        if (valueMap.size() > 9 && player1pieces.size() == 2
+//                && player1pieces.size() == player2pieces.size()) {
+//            int reach = 100;
+//            for (Position p1 : player1pieces) {
+//                for (Position p2 : player2pieces) {
+//                    int t = getApproachMoves(p1, p2);
+//                    if (t > 1 && t < reach) {
+//                        reach = t;
+//                    }
+//                }
+//            }
+//            return reach >= 7;
+//        }
+//        return false;
+//    }
 
     /**
      * returns number of approach moves needed to reach from
@@ -361,25 +382,25 @@ public class State {
      * @param p2 Position 2
      * @return number of moves
      */
-    private int getApproachMoves(Position p1, Position p2) {
-        Queue<Position> queue = new ArrayDeque<>();
-        Set<Position> visited = new HashSet<>();
-        queue.add(p1);
-        visited.add(p1);
-        int moveCount = -1;
-        while (!queue.isEmpty()) {
-            moveCount++;
-            Position p = queue.poll();
-            if (p.equals(p2)) {
-                break;
-            }
-            Set<Position> connections = connectionMap.get(p);
-            for (Position con : connections) {
-                if (!visited.contains(con)) {
-                    queue.add(con);
-                }
-            }
-        }
-        return moveCount;
-    }
+//    private int getApproachMoves(Position p1, Position p2) {
+//        Queue<Position> queue = new ArrayDeque<>();
+//        Set<Position> visited = new HashSet<>();
+//        queue.add(p1);
+//        visited.add(p1);
+//        int moveCount = -1;
+//        while (!queue.isEmpty()) {
+//            moveCount++;
+//            Position p = queue.poll();
+//            if (p.equals(p2)) {
+//                break;
+//            }
+//            Set<Position> connections = connectionMap.get(p);
+//            for (Position con : connections) {
+//                if (!visited.contains(con)) {
+//                    queue.add(con);
+//                }
+//            }
+//        }
+//        return moveCount;
+//    }
 }
