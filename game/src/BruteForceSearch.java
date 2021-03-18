@@ -73,7 +73,7 @@ public class BruteForceSearch implements Search {
             return new StateValueBF(state.payOff(), searchCount);
         }
         if (isCutoff(remainingDepth)) {
-            return new StateValueBF(eval.evaluate(state.getValueMap()), searchCount);
+            return new StateValueBF(eval.evaluate(state.getValueMap(), remainingDepth), searchCount);
         }
         if (origDepthLimit - remainingDepth >= 7) {
             // draw
@@ -109,7 +109,7 @@ public class BruteForceSearch implements Search {
             return new StateValueBF(state.payOff(), searchCount);
         }
         if (isCutoff(remainingDepth)) {
-            return new StateValueBF(eval.evaluate(state.getValueMap()), searchCount);
+            return new StateValueBF(eval.evaluate(state.getValueMap(), remainingDepth), searchCount);
         }
         if (origDepthLimit - remainingDepth >= 7) {
             // draw

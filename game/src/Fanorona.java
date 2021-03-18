@@ -24,7 +24,29 @@ public class Fanorona {
         int depthLimitChoice = 3;
         int depthLimitLarge = 8;
 
-        Evaluation evaluation0 = valueMap -> {
+        Evaluation evaluation0 = (valueMap, remainingDepth) -> {
+            int whitePieces = 0;
+            int blackPieces = 0;
+            for (Position p : valueMap.keySet()) {
+                if (valueMap.get(p) == 1) {
+                    whitePieces++;
+                } else if (valueMap.get(p) == 2) {
+                    blackPieces++;
+                }
+            }
+            double value = ((double) whitePieces - blackPieces);
+            if (remainingDepth <= 0) {
+                return 0;
+            } else {
+                if (value < 0) {
+                    return -100;
+                } else {
+                    return 100;
+                }
+            }
+        };
+
+        Evaluation evaluation1 = (valueMap, remainingDepth) -> {
             int whitePieces = 0;
             int blackPieces = 0;
             int total = valueMap.size();
@@ -40,7 +62,7 @@ public class Fanorona {
         };
 
 
-        Evaluation evaluation1 = valueMap -> {
+        Evaluation evaluation2 = (valueMap, remainingDepth) -> {
             int whitePieces = 0;
             int blackPieces = 0;
             int blank = 0;

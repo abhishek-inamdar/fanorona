@@ -1,4 +1,7 @@
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * State representation
@@ -59,6 +62,7 @@ public class State {
 
     /**
      * returns isDraw value
+     *
      * @return isDraw value
      */
     public boolean isDraw() {
@@ -67,6 +71,7 @@ public class State {
 
     /**
      * sets isDraw value
+     *
      * @param draw value for isDraw
      */
     public void setDraw(boolean draw) {
@@ -335,72 +340,13 @@ public class State {
      * @param playerNum Player number
      * @return Positions
      */
-//    public Set<Position> getPieces(int playerNum) {
-//        Set<Position> pieces = new HashSet<>();
-//        for (Position p : valueMap.keySet()) {
-//            if (valueMap.get(p) == playerNum) {
-//                pieces.add(p);
-//            }
-//        }
-//        return pieces;
-//    }
-
-    /**
-     * Checks if it's draw
-     * For Simplicity draw condition is considered as follows
-     * 1. Board needs to be at least 5*5 or 5*9
-     * 2. Each player should have 2 pieces left
-     * 3. Least amount of moves for any two pieces of opponents
-     * to attack with APPROACH Move should be at least 7
-     *
-     * @return true if draw condition is satisfied, false otherwise
-     */
-//    public boolean isDraw() {
-//        Set<Position> player1pieces = getPieces(1);
-//        Set<Position> player2pieces = getPieces(2);
-//        if (valueMap.size() > 9 && player1pieces.size() == 2
-//                && player1pieces.size() == player2pieces.size()) {
-//            int reach = 100;
-//            for (Position p1 : player1pieces) {
-//                for (Position p2 : player2pieces) {
-//                    int t = getApproachMoves(p1, p2);
-//                    if (t > 1 && t < reach) {
-//                        reach = t;
-//                    }
-//                }
-//            }
-//            return reach >= 7;
-//        }
-//        return false;
-//    }
-
-    /**
-     * returns number of approach moves needed to reach from
-     * one position to another.
-     *
-     * @param p1 Position 1
-     * @param p2 Position 2
-     * @return number of moves
-     */
-//    private int getApproachMoves(Position p1, Position p2) {
-//        Queue<Position> queue = new ArrayDeque<>();
-//        Set<Position> visited = new HashSet<>();
-//        queue.add(p1);
-//        visited.add(p1);
-//        int moveCount = -1;
-//        while (!queue.isEmpty()) {
-//            moveCount++;
-//            Position p = queue.poll();
-//            if (p.equals(p2)) {
-//                break;
-//            }
-//            Set<Position> connections = connectionMap.get(p);
-//            for (Position con : connections) {
-//                if (!visited.contains(con)) {
-//                    queue.add(con);
-//                }
-//            }
-//        }
-//        return moveCount;
-//    }
+    public Set<Position> getPieces(int playerNum) {
+        Set<Position> pieces = new HashSet<>();
+        for (Position p : valueMap.keySet()) {
+            if (valueMap.get(p) == playerNum) {
+                pieces.add(p);
+            }
+        }
+        return pieces;
+    }
 }

@@ -81,7 +81,7 @@ public class AlphaBetaSearch implements Search {
             }
         }
         if (isCutoff(remainingDepth)) {
-            return new StateValueAB(eval.evaluate(state.getValueMap()), beta, searchCount);
+            return new StateValueAB(eval.evaluate(state.getValueMap(), remainingDepth), beta, searchCount);
         }
         if (origDepthLimit - remainingDepth >= 7) {
             // draw
@@ -131,7 +131,7 @@ public class AlphaBetaSearch implements Search {
             }
         }
         if (isCutoff(remainingDepth)) {
-            return new StateValueAB(alpha, eval.evaluate(state.getValueMap()), searchCount);
+            return new StateValueAB(alpha, eval.evaluate(state.getValueMap(), remainingDepth), searchCount);
         }
         if (origDepthLimit - remainingDepth >= 7) {
             // draw

@@ -9,5 +9,5 @@ import java.util.Map;
  */
 @FunctionalInterface
 public interface Evaluation {
-    int evaluate(Map<Position, Integer> valueMap);
+    int evaluate(Map<Position, Integer> valueMap, int remainingDepth);
 }
