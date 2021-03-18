@@ -284,6 +284,31 @@ public class State {
     }
 
     /**
+     * Returns payOff of this State
+     * :PRECONDITION: isTerminal() is true
+     * assigns 100 if Player1 is winning or -100 if Player 2 is winning
+     *
+     * @return payoff value
+     */
+    public int payOff() {
+        int player1Count = 0, player2Count = 0;
+        for (Position p : valueMap.keySet()) {
+            if (valueMap.get(p) == 1) {
+                player1Count++;
+            } else if (valueMap.get(p) == 2) {
+                player2Count++;
+            }
+        }
+        if (player1Count > player2Count) {
+            return 100;
+        } else if (player1Count < player2Count) {
+            return -100;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
      * returns Set Positions for given Player
      *
      * @param playerNum Player number

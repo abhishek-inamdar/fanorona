@@ -65,7 +65,17 @@ public class AlphaBetaSearch implements Search {
     private StateValueAB maxValue(State state, Evaluation eval, int remainingDepth, int alpha, int beta) {
         int searchCount = 0;
         // value of a state, given it is our move
-        if (state.isTerminal() || isCutoff(remainingDepth)) {
+        if (state.isTerminal()) {
+            int payOff = state.payOff();
+            if (payOff > 0) {
+                return new StateValueAB(payOff, beta, searchCount);
+            } else if (payOff < 0) {
+                return new StateValueAB(alpha, payOff, searchCount);
+            } else {
+                return new StateValueAB(payOff, payOff, searchCount);
+            }
+        }
+        if (isCutoff(remainingDepth)) {
             return new StateValueAB(eval.evaluate(state.getValueMap()), beta, searchCount);
         }
         if (state.isDraw()) {
@@ -103,7 +113,17 @@ public class AlphaBetaSearch implements Search {
     private StateValueAB minValue(State state, Evaluation eval, int remainingDepth, int alpha, int beta) {
         int searchCount = 0;
         // value of a state, given it is our move
-        if (state.isTerminal() || isCutoff(remainingDepth)) {
+        if (state.isTerminal()) {
+            int payOff = state.payOff();
+            if (payOff > 0) {
+                return new StateValueAB(payOff, beta, searchCount);
+            } else if (payOff < 0) {
+                return new StateValueAB(alpha, payOff, searchCount);
+            } else {
+                return new StateValueAB(payOff, payOff, searchCount);
+            }
+        }
+        if (isCutoff(remainingDepth)) {
             return new StateValueAB(alpha, eval.evaluate(state.getValueMap()), searchCount);
         }
         if (state.isDraw()) {

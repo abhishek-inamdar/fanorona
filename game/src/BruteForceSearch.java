@@ -63,7 +63,10 @@ public class BruteForceSearch implements Search {
     private StateValueBF maxValue(State state, Evaluation eval, int remainingDepth) {
         int searchCount = 0;
         // value of a state, given it is our move
-        if (state.isTerminal() || isCutoff(remainingDepth)) {
+        if (state.isTerminal()) {
+            return new StateValueBF(state.payOff(), searchCount);
+        }
+        if (isCutoff(remainingDepth)) {
             return new StateValueBF(eval.evaluate(state.getValueMap()), searchCount);
         }
         if (state.isDraw()) {
@@ -94,7 +97,10 @@ public class BruteForceSearch implements Search {
     private StateValueBF minValue(State state, Evaluation eval, int remainingDepth) {
         int searchCount = 0;
         // value of a state, given it is our move
-        if (state.isTerminal() || isCutoff(remainingDepth)) {
+        if (state.isTerminal()) {
+            return new StateValueBF(state.payOff(), searchCount);
+        }
+        if (isCutoff(remainingDepth)) {
             return new StateValueBF(eval.evaluate(state.getValueMap()), searchCount);
         }
         if (state.isDraw()) {
