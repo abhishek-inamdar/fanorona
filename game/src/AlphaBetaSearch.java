@@ -49,11 +49,8 @@ public class AlphaBetaSearch implements Search {
                 }
             }
         }
-        State state = successors.get(selectedMove);
-        if (alpha == 0 || beta == 0) {
-            state.setDraw(true);
-        }
-        return new Play(selectedMove, state, searchCount);
+
+        return new Play(selectedMove, successors.get(selectedMove), searchCount);
     }
 
     /**
@@ -96,6 +93,9 @@ public class AlphaBetaSearch implements Search {
             StateValueAB stateValue = minValue(successors.get(m), eval, remainingDepth - 1, origDepthLimit, alpha, beta);
             if (stateValue.getBeta() > alpha) {
                 alpha = stateValue.getBeta();
+            }
+            if (alpha == 0) {
+                successors.get(m).setDraw(true);
             }
             // if better (for me) than my opponent's option,
             // no point to continue searching this branch
@@ -146,6 +146,9 @@ public class AlphaBetaSearch implements Search {
             StateValueAB stateValue = maxValue(successors.get(m), eval, remainingDepth - 1, origDepthLimit, alpha, beta);
             if (stateValue.getAlpha() < beta) {
                 beta = stateValue.getAlpha();
+            }
+            if (beta == 0) {
+                successors.get(m).setDraw(true);
             }
             // if better (for me) than my opponent's option,
             // no point to continue searching this branch

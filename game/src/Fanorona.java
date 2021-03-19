@@ -2,6 +2,8 @@ import java.util.Map;
 
 /**
  * Main class for Fanorona Game
+ *
+ * @author Abhishek Inamdar
  */
 public class Fanorona {
     /**
@@ -10,20 +12,9 @@ public class Fanorona {
      * @param args Ignored
      */
     public static void main(String[] args) {
-        //TODO add main code
-
-        Board boardThreeByThree = new Board(3, 3);
-        Board boardFiveByFive = new Board(5, 5);
-        Board boardFiveByNine = new Board(9, 5);
-
-        Search bruteForceSearch = new BruteForceSearch();
-        Search randomSearch = new RandomSearch();
-        Search alphaBetaSearch = new AlphaBetaSearch();
-
-        int depthLimitOne = 1;
-        int depthLimitChoice = 3;
-        int depthLimitLarge = 8;
-
+        /**
+         * Zero evaluation function
+         */
         Evaluation evaluation0 = (valueMap, remainingDepth) -> {
             int whitePieces = 0;
             int blackPieces = 0;
@@ -38,6 +29,7 @@ public class Fanorona {
             if (remainingDepth <= 0) {
                 return 0;
             } else {
+                //Not necessary, but just in case
                 if (value < 0) {
                     return -100;
                 } else {
@@ -46,6 +38,9 @@ public class Fanorona {
             }
         };
 
+        /**
+         * First evaluation function
+         */
         Evaluation evaluation1 = (valueMap, remainingDepth) -> {
             int whitePieces = 0;
             int blackPieces = 0;
@@ -61,7 +56,9 @@ public class Fanorona {
             return (int) Math.round(value);
         };
 
-
+        /**
+         * Second evaluation function
+         */
         Evaluation evaluation2 = (valueMap, remainingDepth) -> {
             int whitePieces = 0;
             int blackPieces = 0;
@@ -85,60 +82,77 @@ public class Fanorona {
             return (int) Math.round(value);
         };
 
-        System.out.println("Brute-force with large depth limit and zero evaluation function vs the same, " +
-                "on the 3x3 game");
-        GameResult result1 = PlayGame(boardThreeByThree,
-                bruteForceSearch, evaluation0, depthLimitLarge,
-                bruteForceSearch, evaluation0, depthLimitLarge);
+        //Testing different scenarios
+        System.out.println("\nBrute force with large depth limit and zero evaluation " +
+                "function vs the same on 3x3 board");
+        GameResult result1 = PlayGame(new Board(3, 3),
+                new BruteForceSearch(), evaluation0, 10,
+                new BruteForceSearch(), evaluation0, 10);
         printResults(result1);
         System.out.println();
 
-        System.out.println("Brute-force with limit 1 vs brute-force with higher limit of your choice, " +
-                "same evaluation function, on 5x5");
-        GameResult result2 = PlayGame(boardFiveByFive,
-                bruteForceSearch, evaluation1, depthLimitOne,
-                bruteForceSearch, evaluation1, depthLimitChoice);
+        System.out.println("\nRandom vs brute-force with limit(s) of your choice, " +
+                "either non-zero evaluation function, on 5x5 board");
+        GameResult result2 = PlayGame(new Board(5, 5),
+                new RandomSearch(), evaluation1, 10,
+                new BruteForceSearch(), evaluation1, 10);
         printResults(result2);
         System.out.println();
 
-        System.out.println("Brute-force with limit of your choice and one evaluation function " +
-                "vs same depth limit and another evaluation function, 5x5");
-        GameResult result3 = PlayGame(boardFiveByFive,
-                bruteForceSearch, evaluation0, depthLimitChoice,
-                bruteForceSearch, evaluation1, depthLimitChoice);
+        System.out.println("\nBrute-force with limit 1 vs brute-force with higher " +
+                "limit of your choice, same evaluation function, on 5x5 board");
+        GameResult result3 = PlayGame(new Board(5, 5),
+                new BruteForceSearch(), evaluation2, 1,
+                new BruteForceSearch(), evaluation2, 8);
         printResults(result3);
         System.out.println();
 
-        System.out.println("Alpha-beta with limit of your choice and one evaluation function " +
-                "vs same depth limit and other evaluation function, 5x5");
-        GameResult result4 = PlayGame(boardFiveByFive,
-                alphaBetaSearch, evaluation0, depthLimitChoice,
-                alphaBetaSearch, evaluation1, depthLimitChoice);
+        System.out.println("\nBrute-force with limit of 10 and one evaluation function " +
+                "\nvs same depth limit and another evaluation function, 5x5 board");
+        GameResult result4 = PlayGame(new Board(5, 5),
+                new BruteForceSearch(), evaluation1, 7,
+                new BruteForceSearch(), evaluation2, 7);
         printResults(result4);
         System.out.println();
 
-        System.out.println("Random vs brute-force with limit(s) of your choice, " +
-                "either non-zero evaluation function, on 5x5");
-        GameResult result5 = PlayGame(boardFiveByFive,
-                randomSearch, evaluation1, depthLimitChoice,
-                bruteForceSearch, evaluation1, depthLimitChoice);
+        System.out.println("\nBrute-force with limit of 5 and one evaluation function " +
+                "\nvs same depth limit and another evaluation function, 5x5 board");
+        GameResult result5 = PlayGame(new Board(5, 5),
+                new BruteForceSearch(), evaluation1, 5,
+                new BruteForceSearch(), evaluation2, 5);
         printResults(result5);
         System.out.println();
 
-        System.out.println("Random vs brute-force with limit(s) of your choice, " +
-                "either non-zero evaluation function, on 5x5");
-        GameResult result6 = PlayGame(boardFiveByFive,
-                randomSearch, evaluation1, depthLimitChoice,
-                bruteForceSearch, evaluation1, depthLimitChoice);
+        System.out.println("\nBrute-force with limit of 11 and one evaluation function " +
+                "\nvs same depth limit and another evaluation function, 5x5 board");
+        GameResult result6 = PlayGame(new Board(5, 5),
+                new BruteForceSearch(), evaluation1, 15,
+                new BruteForceSearch(), evaluation2, 15);
         printResults(result6);
         System.out.println();
 
-        System.out.println("Random vs brute-force with limit(s) of your choice, " +
-                "either non-zero evaluation function, on 5x5");
-        GameResult result7 = PlayGame(boardFiveByFive,
-                randomSearch, evaluation1, depthLimitChoice,
-                bruteForceSearch, evaluation1, depthLimitChoice);
+        System.out.println("\nAlpha-beta with limit of 15 and first evaluation function " +
+                "\nvs same depth limit and second evaluation function, 5x5 board");
+        GameResult result7 = PlayGame(new Board(5, 5),
+                new AlphaBetaSearch(), evaluation1, 15,
+                new AlphaBetaSearch(), evaluation2, 15);
         printResults(result7);
+        System.out.println();
+
+        System.out.println("\nAlpha-beta with limit of 15 and second evaluation function " +
+                "\nvs same depth limit and first evaluation function, 5x5 board");
+        GameResult result8 = PlayGame(new Board(5, 5),
+                new AlphaBetaSearch(), evaluation2, 15,
+                new AlphaBetaSearch(), evaluation1, 15);
+        printResults(result8);
+        System.out.println();
+
+        System.out.println("\nBrute-force with limit of your choice and one evaluation function " +
+                "\nvs Alpha-beta with same depth limit and same evaluation function, on 5x5 board");
+        GameResult result9 = PlayGame(new Board(5, 5),
+                new BruteForceSearch(), evaluation1, 6,
+                new AlphaBetaSearch(), evaluation1, 6);
+        printResults(result9);
         System.out.println();
     }
 
@@ -200,22 +214,21 @@ public class Fanorona {
         int playerWon = result.getPlayerWon();
         Map<Move, Integer> moveCountMapP1 = result.getPlayer1moveCounts();
         Map<Move, Integer> moveCountMapP2 = result.getPlayer2moveCounts();
-        System.out.println("****************************************");
+        System.out.println("************************************************************************");
         if (playerWon == 0) {
             System.out.println("Game Drawn!!");
         } else {
             System.out.println("Player Won: " + playerWon);
         }
-        System.out.print("Player 1 moveCount: ");
+        System.out.print("Player 1 Number of moves: ");
         System.out.println(moveCountMapP1.size());
-        System.out.print("Player 2 moveCount: ");
-        System.out.println(moveCountMapP2.size());
-
-        System.out.print("Player 1 moveSearchCount: ");
+        System.out.print("Player 1 amount of states visited: ");
         System.out.println(moveCountMapP1.values().stream().mapToLong(i -> i).sum());
-        System.out.print("Player 2 moveSearchCount: ");
+
+        System.out.print("Player 2 Number of moves: ");
+        System.out.println(moveCountMapP2.size());
+        System.out.print("Player 2 amount of states visited: ");
         System.out.println(moveCountMapP2.values().stream().mapToLong(i -> i).sum());
-        System.out.println("****************************************");
     }
 }
 

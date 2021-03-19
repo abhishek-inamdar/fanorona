@@ -50,11 +50,7 @@ public class BruteForceSearch implements Search {
                 }
             }
         }
-        State state = successors.get(selectedMove);
-        if(value == 0) {
-            state.setDraw(true);
-        }
-        return new Play(selectedMove, state, searchCount);
+        return new Play(selectedMove, successors.get(selectedMove), searchCount);
     }
 
     /**
@@ -88,6 +84,9 @@ public class BruteForceSearch implements Search {
             StateValueBF stateValue = minValue(successors.get(m), eval, remainingDepth - 1, origDepthLimit);
             if (stateValue.getBest() > best) {
                 best = stateValue.getBest();
+            }
+            if (best == 0) {
+                successors.get(m).setDraw(true);
             }
         }
         return new StateValueBF(best, searchCount);
@@ -124,6 +123,9 @@ public class BruteForceSearch implements Search {
             StateValueBF stateValue = maxValue(successors.get(m), eval, remainingDepth - 1, origDepthLimit);
             if (stateValue.getBest() < best) {
                 best = stateValue.getBest();
+            }
+            if (best == 0) {
+                successors.get(m).setDraw(true);
             }
         }
         return new StateValueBF(best, searchCount);

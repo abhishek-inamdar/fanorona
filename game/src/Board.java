@@ -22,13 +22,13 @@ public class Board {
     /**
      * Map of all the connected positions
      */
-    private Map<Position, Set<Position>> connectionMap;
+    private final Map<Position, Set<Position>> connectionMap;
 
     /**
      * Map of values at each position
      * Value: 0 = No piece, 1 = white piece, 2 = black piece
      */
-    private Map<Position, Integer> valueMap;
+    private final Map<Position, Integer> valueMap;
 
     /**
      * Constructor method
